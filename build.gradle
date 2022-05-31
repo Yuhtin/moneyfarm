@@ -1,0 +1,62 @@
+plugins {
+    id 'java'
+
+    id 'com.github.johnrengelman.shadow' version '5.0.0'
+    id 'net.minecrell.plugin-yml.bukkit' version '0.3.0'
+}
+
+group 'com.yuhtin.quotes.moneyfarm'
+version '1.0-SNAPSHOT'
+
+tasks.build.dependsOn('shadowJar')
+
+repositories {
+    mavenCentral()
+
+    maven { url 'https://jitpack.io' }
+
+    maven { url = 'https://maven.elmakers.com/repository/' }
+
+    maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url = 'https://oss.sonatype.org/content/repositories/central' }
+}
+
+dependencies {
+    compileOnly 'org.spigotmc:spigot-api:1.7.10-R0.1-SNAPSHOT'
+    compileOnly "com.github.MilkBowl:VaultAPI:1.7"
+
+    implementation 'com.github.HenryFabio:inventory-api:2.0.3'
+    implementation 'me.lucko:helper:5.6.10'
+
+    def lombok = 'org.projectlombok:lombok:1.18.22'
+
+    compileOnly lombok
+    annotationProcessor lombok
+}
+
+bukkit {
+    main = 'com.yuhtin.quotes.MoneyFarm'
+    authors = ['Yuhtin']
+    version = "${project.version}"
+    commands {
+        farm {
+            aliases = ['farms']
+        }
+    }
+}
+
+shadowJar {
+    archiveName("${project.name}-${project.version}.jar")
+
+    relocate 'com.henryfabio.minecraft.inventoryapi', 'com.nextplugins.onlinetime.libs.inventoryapi'
+
+    relocate 'com.henryfabio.sqlprovider', 'com.nextplugins.onlinetime.libs.sqlprovider'
+    relocate 'com.zaxxer.hikari', 'com.nextplugins.onlinetime.libs.hikari'
+}
+
+compileJava {
+    options.encoding = "UTF-8"
+
+    sourceCompatibility = "1.8"
+    targetCompatibility = "1.8"
+}
