@@ -21,10 +21,10 @@ public class StorageUpdateTask implements TerminableModule {
             for (val player : Bukkit.getOnlinePlayers()) {
                 var storage = cache.getCache().getOrDefault(player.getName(), null);
                 if (storage == null) {
-                    StorageFarm storageFarm = instance.getAccountRepository().selectOne(player.getName());
+                    StorageFarm storageFarm = instance.getStorageRepository().selectOne(player.getName());
                     if (storageFarm == null) {
                         storage = new StorageFarm();
-                        instance.getAccountRepository().saveOne(player.getName(), storage);
+                        instance.getStorageRepository().saveOne(player.getName(), storage);
                     } else {
                         storage = storageFarm;
                     }

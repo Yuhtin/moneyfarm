@@ -5,7 +5,7 @@ import com.henryfabio.sqlprovider.executor.SQLExecutor;
 import com.yuhtin.quotes.moneyfarm.cache.StorageCache;
 import com.yuhtin.quotes.moneyfarm.command.MoneyFarmCommand;
 import com.yuhtin.quotes.moneyfarm.dao.SQLProvider;
-import com.yuhtin.quotes.moneyfarm.dao.repository.AccountRepository;
+import com.yuhtin.quotes.moneyfarm.dao.repository.StorageRepository;
 import com.yuhtin.quotes.moneyfarm.util.EconomyHook;
 import lombok.Getter;
 import me.lucko.helper.plugin.ExtendedJavaPlugin;
@@ -16,7 +16,7 @@ public class MoneyFarm extends ExtendedJavaPlugin {
 
     private final StorageCache storageCache = new StorageCache();
     private final EconomyHook economyHook = new EconomyHook();
-    private AccountRepository accountRepository;
+    private StorageRepository storageRepository;
 
     @Override
     public void enable() {
@@ -24,8 +24,8 @@ public class MoneyFarm extends ExtendedJavaPlugin {
         getCommand("moneyfarm").setExecutor(new MoneyFarmCommand());
 
         SQLConnector setup = SQLProvider.of(this).setup(null);
-        accountRepository = new AccountRepository(new SQLExecutor(setup));
-        accountRepository.createTable();
+        storageRepository = new StorageRepository(new SQLExecutor(setup));
+        storageRepository.createTable();
 
         getLogger().info("MoneyFarm has been enabled!");
     }

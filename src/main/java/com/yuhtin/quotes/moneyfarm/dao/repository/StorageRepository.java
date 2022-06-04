@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Set;
 
 @RequiredArgsConstructor
-public final class AccountRepository {
+public final class StorageRepository {
 
     private static final String TABLE = "moneyfarm_data";
 
