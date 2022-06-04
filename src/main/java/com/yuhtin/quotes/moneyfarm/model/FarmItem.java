@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 @Data
 public class FarmItem {
 
+    private final String identifier;
     private final ItemStack item;
     private final int interval;
     private final double coinsPerItem;
