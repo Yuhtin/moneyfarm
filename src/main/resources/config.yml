@@ -1,3 +1,13 @@
+connection:
+  mysql:
+    enabled: false
+    address: "localhost:3306"
+    username: "root"
+    password: ""
+    database: "test"
+  sqlite:
+    file: "storage.sql"
+
 items:
   example:
     # Nome identificador do item

@@ -1,16 +1,17 @@
 package com.yuhtin.quotes.moneyfarm.manager;
 
-import com.henryfabio.sqlprovider.connector.SQLConnector;
-import com.henryfabio.sqlprovider.executor.SQLExecutor;
 import com.yuhtin.quotes.moneyfarm.cache.StorageCache;
-import com.yuhtin.quotes.moneyfarm.dao.SQLProvider;
-import com.yuhtin.quotes.moneyfarm.dao.repository.StorageRepository;
 import com.yuhtin.quotes.moneyfarm.model.FarmItem;
 import com.yuhtin.quotes.moneyfarm.model.StorageFarm;
 import com.yuhtin.quotes.moneyfarm.model.StorageFarmItem;
+import com.yuhtin.quotes.moneyfarm.sql.StorageDAO;
+import com.yuhtin.quotes.moneyfarm.sql.connection.SQLConnection;
+import com.yuhtin.quotes.moneyfarm.sql.connection.mysql.MySQLConnection;
+import com.yuhtin.quotes.moneyfarm.sql.connection.sqlite.SQLiteConnection;
 import com.yuhtin.quotes.moneyfarm.util.ColorUtil;
 import lombok.Getter;
 import lombok.val;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -18,13 +19,19 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class StorageManager {
 
     private final StorageCache storageCache = new StorageCache();
-    private StorageRepository storageRepository;
+    private StorageDAO storageDAO;
 
     public void init(JavaPlugin plugin) {
-        SQLConnector setup = SQLProvider.of(plugin).setup(null);
+        ConfigurationSection connectionSection = plugin.getConfig().getConfigurationSection("connection");
+        SQLConnection sql = new MySQLConnection();
+        if (!sql.configure(connectionSection.getConfigurationSection("mysql"))) {
+            sql = new SQLiteConnection();
+            sql.configure(connectionSection.getConfigurationSection("sqlite"));
+        }
 
-        storageRepository = new StorageRepository(new SQLExecutor(setup));
-        storageRepository.createTable();
+        storageDAO = new StorageDAO();
+        storageDAO.setSqlConnection(sql);
+        storageDAO.createTable();
 
         storageCache.init();
     }
@@ -33,10 +40,10 @@ public class StorageManager {
         StorageFarm cached = storageCache.getCache().getOrDefault(player.getName(), null);
         if (cached != null) return cached;
 
-        StorageFarm farm = storageRepository.selectOne(player.getName());
+        StorageFarm farm = storageDAO.find(player.getName());
         if (farm == null) {
             farm = new StorageFarm();
-            storageRepository.saveOne(player.getName(), farm);
+            storageDAO.save(player.getName(), farm);
         }
 
         storageCache.getCache().put(player.getName(), farm);
@@ -86,7 +93,7 @@ public class StorageManager {
 
     public void save() {
         for (val entry : storageCache.getCache().entrySet()) {
-            storageRepository.saveOne(entry.getKey(), entry.getValue());
+            storageDAO.save(entry.getKey(), entry.getValue());
         }
     }
 }
