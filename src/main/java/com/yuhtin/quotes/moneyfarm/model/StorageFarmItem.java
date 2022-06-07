@@ -1,14 +1,21 @@
 package com.yuhtin.quotes.moneyfarm.model;
 
 import com.yuhtin.quotes.moneyfarm.MoneyFarm;
-import lombok.Builder;
-import lombok.Data;
+import com.yuhtin.quotes.moneyfarm.cache.StorageCache;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-@Builder
-@Data
+import javax.annotation.Nullable;
+
+@Getter
+@Setter
 @EqualsAndHashCode(callSuper = false)
 public class StorageFarmItem extends FarmItem {
+
+    private double coins;
+    private double quantity;
+    private long lastGenerationTime;
 
     public StorageFarmItem(FarmItem farmItem) {
         super(farmItem.getIdentifier(), farmItem.getItem(), farmItem.getInterval(), farmItem.getCoinsPerItem());
@@ -17,14 +24,7 @@ public class StorageFarmItem extends FarmItem {
         this.lastGenerationTime = 0;
     }
 
-    private double coins;
-    private double quantity;
-    private long lastGenerationTime;
-
-    public String toString() {
-        return this.getIdentifier() + "-" + coins + "-" + quantity + "-" + lastGenerationTime;
-    }
-
+    @Nullable
     public static StorageFarmItem fromString(String data) {
         String[] split = data.split("-");
         String identifier = split[0];
@@ -32,12 +32,20 @@ public class StorageFarmItem extends FarmItem {
         double quantity = Double.parseDouble(split[2]);
         long lastGenerationTime = Long.parseLong(split[3]);
 
-        StorageFarmItem storageFarmItem = new StorageFarmItem(MoneyFarm.getInstance().getStorageCache().getFarmItem().get(identifier));
+        StorageCache storageCache = MoneyFarm.getInstance().getStorageManager().getStorageCache();
+        FarmItem farmItem = storageCache.getFarmItems().getOrDefault(identifier, null);
+        if (farmItem == null) return null;
+
+        StorageFarmItem storageFarmItem = new StorageFarmItem(farmItem);
         storageFarmItem.setCoins(coins);
         storageFarmItem.setQuantity(quantity);
         storageFarmItem.setLastGenerationTime(lastGenerationTime);
 
         return storageFarmItem;
+    }
+
+    public String toString() {
+        return this.getIdentifier() + "-" + coins + "-" + quantity + "-" + lastGenerationTime;
     }
 
 }

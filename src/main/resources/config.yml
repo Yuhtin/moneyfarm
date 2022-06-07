@@ -1,31 +1,46 @@
+items:
+  example:
+    # Nome identificador do item
+    name: 'Example'
+    # De quantos em quantos segundos irá gerar coins
+    interval: 5
+    # Quantidade de coins que será gerada a cada intervalo
+    coins: 10
+    # Item no menu
+    item:
+      material: WATCH
+      data: 0
+      displayName: '&aExample'
+
 bonus:
   # Permissão para aumentar o limite de stack por item
   stack:
-    # Sem permissão
-    default: 5
-    # moneyfarm.stack1
-    stack1: 15
-    # moneyfarm.stack2
-    stack2: 20
-    # moneyfarm.stack3
-    stack3: 25
-    # moneyfarm.stack4
-    stack4: 30
     # Sem limite de stack
     # moneyfarm.stackinfinite
     stackinfinite: -1
+    # moneyfarm.stack4
+    stack4: 30
+    # moneyfarm.stack3
+    stack3: 25
+    # moneyfarm.stack2
+    stack2: 20
+    # moneyfarm.stack1
+    stack1: 15
+    # Sem permissão
+    default: 5
+
   # Permissão para multiplicar a quantidade de coins gerada
   generate:
-    # moneyfarm.generate1
-    generate1: 1.15
-    # moneyfarm.generate2
-    generate2: 1.25
-    # moneyfarm.generate3
-    generate3: 1.35
-    # moneyfarm.generate4
-    generate4: 1.45
     # moneyfarm.generate5
     generate5: 1.55
+    # moneyfarm.generate4
+    generate4: 1.45
+    # moneyfarm.generate3
+    generate3: 1.35
+    # moneyfarm.generate2
+    generate2: 1.25
+    # moneyfarm.generate1
+    generate1: 1.15
 
 currency-format:
   - ''

@@ -5,7 +5,7 @@ plugins {
     id 'net.minecrell.plugin-yml.bukkit' version '0.3.0'
 }
 
-group 'com.yuhtin.quotes.moneyfarm'
+group 'com.yuhtin.quotes'
 version '1.0-SNAPSHOT'
 
 tasks.build.dependsOn('shadowJar')
@@ -25,18 +25,15 @@ dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.7.10-R0.1-SNAPSHOT'
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
 
-    implementation 'com.github.HenryFabio:sql-provider:9561f20fd2'
     implementation 'com.github.HenryFabio:inventory-api:2.0.3'
-    implementation 'me.lucko:helper:5.6.10'
 
     def lombok = 'org.projectlombok:lombok:1.18.22'
-
     compileOnly lombok
     annotationProcessor lombok
 }
 
 bukkit {
-    main = 'com.yuhtin.quotes.MoneyFarm'
+    main = 'com.yuhtin.quotes.moneyfarm.MoneyFarm'
     authors = ['Yuhtin']
     version = "${project.version}"
     commands {
@@ -49,10 +46,7 @@ bukkit {
 shadowJar {
     archiveName("${project.name}-${project.version}.jar")
 
-    relocate 'com.henryfabio.minecraft.inventoryapi', 'com.nextplugins.onlinetime.libs.inventoryapi'
-
-    relocate 'com.henryfabio.sqlprovider', 'com.nextplugins.onlinetime.libs.sqlprovider'
-    relocate 'com.zaxxer.hikari', 'com.nextplugins.onlinetime.libs.hikari'
+    relocate 'com.henryfabio.minecraft.inventoryapi', 'com.yuhtin.quotes.moneyfarm.libs.inventoryapi'
 }
 
 compileJava {

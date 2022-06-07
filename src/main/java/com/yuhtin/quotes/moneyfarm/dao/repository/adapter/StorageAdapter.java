@@ -13,7 +13,10 @@ public final class StorageAdapter implements SQLResultAdapter<StorageFarm> {
 
         StorageFarm storageFarm = new StorageFarm();
         for (String item : data.split("@")) {
-            storageFarm.getFarmItems().add(StorageFarmItem.fromString(item));
+            StorageFarmItem farmItem = StorageFarmItem.fromString(item);
+            if (farmItem == null) continue;
+
+            storageFarm.getFarmItems().add(farmItem);
         }
 
         return storageFarm;

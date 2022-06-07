@@ -1,38 +1,37 @@
 package com.yuhtin.quotes.moneyfarm;
 
-import com.henryfabio.sqlprovider.connector.SQLConnector;
-import com.henryfabio.sqlprovider.executor.SQLExecutor;
-import com.yuhtin.quotes.moneyfarm.cache.StorageCache;
 import com.yuhtin.quotes.moneyfarm.command.MoneyFarmCommand;
-import com.yuhtin.quotes.moneyfarm.dao.SQLProvider;
-import com.yuhtin.quotes.moneyfarm.dao.repository.StorageRepository;
+import com.yuhtin.quotes.moneyfarm.manager.StorageManager;
+import com.yuhtin.quotes.moneyfarm.task.StorageUpdateTask;
 import com.yuhtin.quotes.moneyfarm.util.EconomyHook;
 import lombok.Getter;
-import me.lucko.helper.plugin.ExtendedJavaPlugin;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
-public class MoneyFarm extends ExtendedJavaPlugin {
+public class MoneyFarm extends JavaPlugin {
 
-    private final StorageCache storageCache = new StorageCache();
+    private final StorageManager storageManager = new StorageManager();
     private final EconomyHook economyHook = new EconomyHook();
-    private StorageRepository storageRepository;
 
     @Override
-    public void enable() {
+    public void onEnable() {
+        saveDefaultConfig();
+
         economyHook.init();
-        getCommand("moneyfarm").setExecutor(new MoneyFarmCommand());
+        storageManager.init(this);
 
-        SQLConnector setup = SQLProvider.of(this).setup(null);
-        storageRepository = new StorageRepository(new SQLExecutor(setup));
-        storageRepository.createTable();
+        StorageUpdateTask storageUpdateTask = new StorageUpdateTask();
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, storageUpdateTask, 0L, 50L);
 
+        getCommand("farm").setExecutor(new MoneyFarmCommand());
         getLogger().info("MoneyFarm has been enabled!");
     }
 
     @Override
-    protected void disable() {
-
+    public void onDisable() {
+        storageManager.save();
+        getLogger().info("MoneyFarm has been disabled!");
     }
 
     public static MoneyFarm getInstance() {
