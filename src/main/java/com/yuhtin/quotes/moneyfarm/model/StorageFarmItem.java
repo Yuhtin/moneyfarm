@@ -21,11 +21,13 @@ public class StorageFarmItem extends FarmItem {
         super(farmItem.getIdentifier(), farmItem.getItem(), farmItem.getInterval(), farmItem.getCoinsPerItem());
 
         this.quantity = 1;
-        this.lastGenerationTime = 0;
+        this.lastGenerationTime = System.currentTimeMillis();
     }
 
     @Nullable
     public static StorageFarmItem fromString(String data) {
+        if (!data.contains("-")) return null;
+
         String[] split = data.split("-");
         String identifier = split[0];
         double coins = Double.parseDouble(split[1]);

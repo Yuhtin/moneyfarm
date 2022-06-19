@@ -10,6 +10,7 @@ import com.henryfabio.minecraft.inventoryapi.viewer.impl.paged.PagedViewer;
 import com.yuhtin.quotes.moneyfarm.MoneyFarm;
 import com.yuhtin.quotes.moneyfarm.model.StorageFarm;
 import com.yuhtin.quotes.moneyfarm.model.StorageFarmItem;
+import com.yuhtin.quotes.moneyfarm.util.ColorUtil;
 import com.yuhtin.quotes.moneyfarm.util.ItemBuilder;
 import com.yuhtin.quotes.moneyfarm.util.NumberUtils;
 import com.yuhtin.quotes.moneyfarm.util.TimeUtils;
@@ -29,9 +30,11 @@ public class StorageView extends PagedInventory {
     public StorageView() {
         super(
                 "storage.main",
-                "&aStorage",
+                "&8Suas Farms",
                 6 * 9
         );
+
+        getConfiguration().secondUpdate(1);
     }
 
     public static StorageView singleton() {
@@ -44,7 +47,7 @@ public class StorageView extends PagedInventory {
         val configuration = viewer.getConfiguration();
 
         configuration.itemPageLimit(21);
-        configuration.border(Border.of(1, 1, 2, 1));
+        configuration.border(Border.of(1, 1, 1, 1));
     }
 
     @Override
@@ -61,9 +64,12 @@ public class StorageView extends PagedInventory {
         editor.setItem(4, InventoryItem.of(new ItemBuilder(Material.SIGN)
                         .name("&aSuas Informações")
                         .setLore(
-                                "&eTipos de farms: &f" + storageFarm.getFarmItems().size() + " types",
-                                "&eFarms totais: &f" + NumberUtils.format(farmCount) + " farms",
-                                "&eCoins para coletar: &f" + NumberUtils.format(coinsCount) + " coins"
+                                "",
+                                "&fFarms: &e" + storageFarm.getFarmItems().size() + " tipo(s)",
+                                "&fFarms Totais: &e" + NumberUtils.format(farmCount) + " farm(s)",
+                                "&fCoins: &e" + NumberUtils.format(coinsCount) + " coins",
+                                "",
+                                "&aClique aqui para coletar tudo!"
                         )
                         .wrap())
                 .defaultCallback(callback -> {
@@ -73,8 +79,13 @@ public class StorageView extends PagedInventory {
                         farmItem.setCoins(0);
                     }
 
+                    if (coins <= 0) {
+                        viewer.getPlayer().sendMessage(ColorUtil.colored("&cVocê não tem coins para coletar!"));
+                        return;
+                    }
+
                     MoneyFarm.getInstance().getEconomyHook().depositCoins(viewer.getPlayer(), coins);
-                    viewer.getPlayer().sendMessage("&aVocê coletou &2" + NumberUtils.format(coins) + " &acoins!");
+                    viewer.getPlayer().sendMessage(ColorUtil.colored("&aVocê coletou &2" + NumberUtils.format(coins) + " &acoins!"));
                 }));
     }
 
@@ -88,27 +99,33 @@ public class StorageView extends PagedInventory {
                 ItemStack item = farmItem.getItem().clone();
                 ItemMeta itemMeta = item.getItemMeta();
 
-                long nextExecuteTime = TimeUnit.SECONDS.toMillis(farmItem.getInterval());
+                long delay = TimeUnit.SECONDS.toMillis(farmItem.getInterval());
+                long nextExecuteTime = delay + farmItem.getLastGenerationTime();
 
                 ArrayList<String> lore = new ArrayList<>();
                 lore.add("&7Quantidade: &e" + NumberUtils.format(farmItem.getQuantity()));
                 lore.add("&7Coins por item: &e" + NumberUtils.format(farmItem.getCoinsPerItem()));
+                lore.add("&7Tempo para gerar: &e" + TimeUtils.formatOne(delay));
                 lore.add("");
                 lore.add("&fCoins: &b" + NumberUtils.format(farmItem.getCoins()));
                 lore.add("");
                 lore.add("&ePróximo update em " + TimeUtils.formatOne(nextExecuteTime - System.currentTimeMillis()));
                 lore.add("&eClique para coletar tudo!");
 
-                itemMeta.setLore(lore);
+                itemMeta.setLore(ColorUtil.colored(lore));
                 item.setItemMeta(itemMeta);
 
                 return InventoryItem.of(item).defaultCallback(clickEvent -> {
                     double coins = farmItem.getCoins();
-                    MoneyFarm.getInstance().getEconomyHook().depositCoins(viewer.getPlayer(), coins);
+                    if (coins <= 0) {
+                        viewer.getPlayer().sendMessage(ColorUtil.colored("&cVocê não tem coins para coletar!"));
+                        return;
+                    }
 
+                    MoneyFarm.getInstance().getEconomyHook().depositCoins(viewer.getPlayer(), coins);
                     farmItem.setCoins(0);
 
-                    viewer.getPlayer().sendMessage("&aVocê coletou &2" + NumberUtils.format(coins) + " &acoins!");
+                    viewer.getPlayer().sendMessage(ColorUtil.colored("&aVocê coletou &2" + NumberUtils.format(coins) + " &acoins!"));
                     update(viewer, viewer.getEditor());
                 });
             });

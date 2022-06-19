@@ -1,5 +1,6 @@
 package com.yuhtin.quotes.moneyfarm;
 
+import com.henryfabio.minecraft.inventoryapi.manager.InventoryManager;
 import com.yuhtin.quotes.moneyfarm.command.MoneyFarmCommand;
 import com.yuhtin.quotes.moneyfarm.manager.StorageManager;
 import com.yuhtin.quotes.moneyfarm.task.StorageUpdateTask;
@@ -16,6 +17,8 @@ public class MoneyFarm extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        InventoryManager.enable(this);
+
         saveDefaultConfig();
 
         economyHook.init();

@@ -42,7 +42,7 @@ public enum TimeUtils {
     }
 
     public static String format(long value) {
-        if (value <= 0) return "0 segundos";
+        if (value <= 999) return "instantes";
 
         long days = TimeUnit.MILLISECONDS.toDays(value);
         long hours = TimeUnit.MILLISECONDS.toHours(value) - (days * 24);
@@ -69,7 +69,7 @@ public enum TimeUtils {
     }
 
     public static String formatOne(long time) {
-        if (time == 0) return "0s";
+        if (time <= 999) return "instantes";
 
         long days = TimeUnit.MILLISECONDS.toDays(time);
         long hours = TimeUnit.MILLISECONDS.toHours(time) - (days * 24);

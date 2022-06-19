@@ -34,10 +34,12 @@ public class MoneyFarmCommand implements CommandExecutor {
                 }
 
                 StorageFarm storageFarm = storageManager.getByPlayer(player);
-                storageManager.increaseStack(player, storageFarm, farmType, quantity);
-
-                sender.sendMessage(ColorUtil.colored("&aAdicionado &f" + quantity + "x &a" + farmType + " &aao jogador " + player.getName() + "."));
-                return true;
+                if (storageManager.increaseStack(player, storageFarm, farmType, quantity)) {
+                    sender.sendMessage(ColorUtil.colored("&aAdicionado &f" + NumberUtils.format(quantity) + "x &a" + farmType + " &aao jogador " + player.getName() + "."));
+                    return true;
+                } else {
+                    return false;
+                }
             }
         }
 

@@ -20,14 +20,14 @@ public final class StorageDAO extends DatabaseProvider {
 
     @Nullable
     public StorageFarm find(String nick) {
-        Document document = query("select * from " + TABLE);
+        Document document = query("select * from " + TABLE + " where owner = '" + nick + "';");
         if (document == null) return null;
 
         return document.parse(StorageDocumentParser.getInstance());
     }
 
     public void save(String nick, StorageFarm storageFarm) {
-        update("insert into " + TABLE + " values (?, ?);", nick, storageFarm.toString());
+        update("replace into " + TABLE + " values (?, ?);", nick, storageFarm.toString());
     }
 
 }

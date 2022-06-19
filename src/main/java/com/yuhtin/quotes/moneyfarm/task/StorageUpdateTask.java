@@ -20,7 +20,7 @@ public class StorageUpdateTask implements Runnable {
                 val lastGenerationTime = item.getLastGenerationTime();
                 if (System.currentTimeMillis() < lastGenerationTime) continue;
 
-                val executes = (int) ((System.currentTimeMillis() - lastGenerationTime) / intervalInMillis);
+                val executes = Math.floorDiv((System.currentTimeMillis() - lastGenerationTime), intervalInMillis);
                 if (executes < 1) continue;
 
                 item.setLastGenerationTime(System.currentTimeMillis());
